@@ -1,14 +1,37 @@
-import React from 'react';
+import React, { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import './index.less'
+import {HashRouter as Router,Route,Switch,Redirect} from 'react-router-dom';
+import {mainRouter} from './routes'
+import store from './store'
+import {Provider} from 'react-redux'
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    
+      <Router>
+      <Provider store={store}>
+      <Switch>
+        <Route path='/admin' render={(routerProps)=>{
+            //登陆才能访问 /admin
+            return (
+              <StrictMode>
+                <App {...routerProps}/>
+              </StrictMode>
+            )
+        }}/>
+        {
+          mainRouter.map(route=>{
+            return <Route path={route.pathname} component={route.component} key={route.pathname}/>
+          })
+        }
+        <Redirect to='/admin' from='/' exact/>
+        <Redirect to='/404'/>
+      </Switch>
+      </Provider>
+      </Router>
+  ,document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change
